@@ -1,0 +1,41 @@
+Vagrant.configure("2") do |config|
+
+    config.vm.box = "generic/ubuntu2204" # ou "generic/debian12"
+  
+    config.vm.network "public_network", bridge: "en0"
+  
+        vb.name = "vm-java-ecosystem"
+        vb.memory = 4096
+        vb.cpus = 2
+    end
+  
+    config.vm.provision "shell", inline: <<-SHELL
+      set -eux
+  
+      apt-get update -y
+  
+      apt-get install -y wget unzip software-properties-common build-essential make docker.io docker-compose zsh curl git
+  
+      apt-get install -y openjdk-21-jdk
+  
+      echo 'export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64' >> /home/vagrant/.profile
+      echo 'export PATH=$JAVA_HOME/bin:$PATH' >> /home/vagrant/.profile
+  
+      apt-get install -y maven
+
+      sudo apt-get install -y make docker.io docker-compose nodejs npm zsh curl git
+
+      sudo -u vagrant -H sh -c '
+            export RUNZSH=no
+            export CHSH=no
+            export KEEP_ZSHRC=yes
+            sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+        '
+      sudo chsh -s $(which zsh) vagrant
+
+      sudo usermod -aG docker vagrant
+
+    SHELL
+
+end
+  
